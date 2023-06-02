@@ -1,0 +1,7 @@
+{
+  "VOTING_ESCROW_ADDRESS": "0xfBBF371C9B0B994EebFcC977CEf603F7f31c070D",
+  "VOTER_ADDRESS": "0x62Ee96e6365ab515Ec647C065c2707d1122d7b26",
+  "MINTER_ADDRESS": "0x86069FEb223EE303085a1A505892c9D4BdBEE996",
+  "API_URL":"https://api.thena.fi/api/v1/fusions",
+  "RSS_FEED_API":"https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@ThenaFi"
+}
