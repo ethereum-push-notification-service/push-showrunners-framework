@@ -1,0 +1,115 @@
+{
+	"info": {
+		"_postman_id": "37b573bc-878a-4d44-8d72-39c7dc04f3b8",
+		"name": "Push Showrunners",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27373169"
+
+	},
+	"item": [
+		{
+			"name": "Staging",
+			"item": [		{
+        "name": "ApeSwap",
+        "item": [
+          {
+            "name": "/trigger_pools_check",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "name": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n\t\"simulate\": {\n\t\t\"payloadMode\": \"Real\",\n\t\t\"txMode\": \"Real\",\n\t\t\"logicOverride\": {\n            \"mode\": true,\n\t\t\t\"overrideCount\": 1\n\t\t},\n\t\t\"txOverride\": {\n            \"mode\": true,\n\t\t\t\"recipientAddr\": \"0x276B820E8382f17ECB9FA77B0952ca4E67287601\",\n\t\t\t\"notificationType\": 3\n\t\t}\n\t}\n}"
+              },
+              "url": {
+                "raw": "localhost:5432/apis/showrunners/apeswap/trigger_pools_check",
+                "host": [
+                  "localhost"
+                ],
+                "port": "5432",
+                "path": [
+                  "apis",
+                  "showrunners",
+                  "apeswap",
+                  "trigger_pools_check"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "/trigger_bonds_check",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "name": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n\t\"simulate\": {\n\t\t\"payloadMode\": \"Real\",\n\t\t\"txMode\": \"Real\",\n\t\t\"logicOverride\": {\n            \"mode\": true,\n\t\t\t\"overrideCount\": 1\n\t\t},\n\t\t\"txOverride\": {\n            \"mode\": true,\n\t\t\t\"recipientAddr\": \"0x276B820E8382f17ECB9FA77B0952ca4E67287601\",\n\t\t\t\"notificationType\": 3\n\t\t}\n\t}\n}"
+              },
+              "url": {
+                "raw": "localhost:5432/apis/showrunners/apeswap/trigger_bonds_check",
+                "host": [
+                  "localhost"
+                ],
+                "port": "5432",
+                "path": [
+                  "apis",
+                  "showrunners",
+                  "apeswap",
+                  "trigger_bonds_check"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "/trigger_discount_check",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "name": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n\t\"simulate\": {\n\t\t\"payloadMode\": \"Real\",\n\t\t\"txMode\": \"Real\",\n\t\t\"logicOverride\": {\n            \"mode\": true,\n\t\t\t\"overrideCount\": 1\n\t\t},\n\t\t\"txOverride\": {\n            \"mode\": true,\n\t\t\t\"recipientAddr\": \"0x276B820E8382f17ECB9FA77B0952ca4E67287601\",\n\t\t\t\"notificationType\": 3\n\t\t}\n\t}\n}"
+              },
+              "url": {
+                "raw": "localhost:5432/apis/showrunners/apeswap/trigger_discount_check",
+                "host": [
+                  "localhost"
+                ],
+                "port": "5432",
+                "path": [
+                  "apis",
+                  "showrunners",
+                  "apeswap",
+                  "trigger_discount_check"
+                ]
+              }
+            },
+            "response": []
+          }
+        ]
+      }]
+		}
+	]
+}
