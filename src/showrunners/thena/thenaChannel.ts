@@ -40,7 +40,6 @@ export default class ThenaChannel extends EPNSChannel {
   async retrivePreviouslySavedData() {
     try {
       const data = await PoolModel.find().select("-_id -__v").exec();
-      console.log("Data retrieved from MongoDB:", data);
       return data;
     } catch (error) {
       console.error("Error retrieving data from MongoDB:", error);
@@ -50,7 +49,6 @@ export default class ThenaChannel extends EPNSChannel {
     try {
       await PoolModel.deleteMany({});
       await PoolModel.insertMany(data);
-      console.log("Data saved to MongoDB successfully");
     } catch (error) {
       console.error("Error saving data to MongoDB:", error);
     }
@@ -120,17 +118,19 @@ export default class ThenaChannel extends EPNSChannel {
       const response = await axios.get(thenaSettings.API_URL);
       const LatestPools = simulate?.logicOverride?.mode
         ? simulate?.logicOverride?.latestPools
-        : response.data;
+        : response.data.data;
       let notifSent = false;
       const oldPools = simulate?.logicOverride?.mode
         ? simulate?.logicOverride?.oldPools
         : await this.retrivePreviouslySavedData();
-      const newPools = LatestPools.filter((Lpool) => {
+      const newPools = LatestPools?.filter((Lpool) => {
         return !oldPools.some((Opool) => {
           return Opool.address === Lpool.address;
         });
       });
+
       for (const pool of newPools) {
+        this.log(`sending new Pool notification for ${pool.symbol}`);
         await this.sendNotification({
           title: "New pool added",
           payloadMsg: `A new [b:${
@@ -159,7 +159,7 @@ export default class ThenaChannel extends EPNSChannel {
 
       // save pool data to db
       this.saveDataToMongoDB(LatestPools);
-      console.log("success");
+
       return { success: true, notifSent: notifSent };
     } catch (error) {
       console.error(
@@ -173,18 +173,20 @@ export default class ThenaChannel extends EPNSChannel {
       const response = await axios.get(thenaSettings.API_URL);
       const LatestPools = simulate?.logicOverride?.mode
         ? simulate?.logicOverride?.latestPools
-        : response.data;
+        : response.data.data;
       let notifSent = false;
       const oldPools = simulate?.logicOverride?.mode
         ? simulate?.logicOverride?.oldPools
         : await this.retrivePreviouslySavedData();
-      const newPools = LatestPools.filter((Lpool) => {
+      const newPools = LatestPools?.filter((Lpool) => {
         return !oldPools.some((Opool) => {
           return Opool.address === Lpool.address;
         });
       });
       for (const pool of newPools) {
         if (pool.gauge.bribes.bribe != null) {
+          this.log(`sending bribed notification for ${pool.symbol}`);
+
           await this.sendNotification({
             title: "Pool Bribed!",
             payloadMsg: `${pool.symbol} pool [b:bribed]! Check it out now!`,
@@ -223,6 +225,8 @@ export default class ThenaChannel extends EPNSChannel {
           Math.floor(new Date(item.pubDate).getTime() / 1000) >
           this.timestamp - 12 * 60 * 60;
         if (postedAfterLastFetch) {
+          this.log(`sending medium notification for ${item.title}`);
+
           await this.sendNotification({
             title: `New article from Thena Fi - ${item.title}`,
             payloadMsg: `A new medium post is published! Click here to read!`,
