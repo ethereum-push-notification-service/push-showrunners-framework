@@ -9,7 +9,8 @@ import { Logger } from 'winston';
 import keys from "./ethTickerKeys.json";
 import { PushAPI, CONSTANTS } from "@pushprotocol/restapi";
 import { ethers } from "ethers";
-import { ethTickerModel } from './ethTickerModel';;
+
+import { ethTickerModel, ethTickerGlobalModel } from './ethTickerModel';;
 
 const bent = require('bent'); // Download library
 
@@ -87,11 +88,14 @@ export default class EthTickerChannel extends EPNSChannel {
           let recipients: string[] = [];
           
           // Retrive Old Eth Price and Cycles count
-          const ethTickerData = await ethTickerModel.findOne({ _id: 'eth_ticker_data' });
+          const ethTickerData = await ethTickerModel.findOne({ subscriber: 'eth_ticker_data' });
+          
+          // Global variables
+          const ethTickerGlobalData = await ethTickerGlobalModel.findOne({ id: 'global' });
           
           // Update current price as prev price
           await ethTickerModel.findByIdAndUpdate(
-            { _id: 'eth_ticker_data' },
+            { subscriber: 'eth_ticker_data' },
             { prevEthPrice: Number(formattedPrice) },
             { upsert: true },
           ); 
@@ -99,11 +103,11 @@ export default class EthTickerChannel extends EPNSChannel {
           this.logInfo(`Prev Price: ${ethTickerData}`);
 
           // Set CYCLES variable in DB
-          const CYCLES = ethTickerData.cycles;
+          const CYCLES = ethTickerGlobalData.cycles;
 
           // 2. Calculate percentage change. |New Price - Old Price| / Old Price
           // Set the Formatted price to a higher price then current Eth price to testout notification
-          const changePercentage = Math.round((Math.abs(formattedPrice - ethTickerData.prevEthPrice) / ethTickerData.prevEthPrice) * 100);
+          const changePercentage = Math.round((Math.abs(formattedPrice - ethTickerGlobalData.prevEthPrice) / ethTickerGlobalData.prevEthPrice) * 100);
           this.logInfo("Change Price :" + changePercentage)
           const provider = new ethers.providers.JsonRpcProvider(settings.providerUrl);
           const signer = new ethers.Wallet(keys.PRIVATE_KEY_NEW_STANDARD.PK, provider);
@@ -154,7 +158,12 @@ export default class EthTickerChannel extends EPNSChannel {
             userData.subscribers.map(async (subscriberObj) => {
               const userSettings = JSON.parse(subscriberObj.settings);
 
-              const mappedValue = await ethTickerModel.findOne({ _id: subscriberObj.subscriber });
+              const mappedValue = await ethTickerModel.findOne({ subscriber: subscriberObj.subscriber });
+              // const mappedValue = await ethTickerModel.findOneAndUpdate(
+              //   { subscriber: subscriberObj.subscriber },
+              //   { lastCycle: CYCLES },
+              //   { upsert: true },
+              //   );
 
               if (userSettings !== null) {
                 const temp = userSettings.find((obj) => obj.index == 2); // for time intervals
@@ -165,12 +174,17 @@ export default class EthTickerChannel extends EPNSChannel {
                 if (temp.enabled === true) {
                   userValue = temp.user;
 
-                  if (mappedValue.value + userValue == CYCLES) {
+                  if (mappedValue.lastCycle + userValue == CYCLES) {
                     recipients.push(subscriberObj.subscriber);
                   }
 
                   // UPDATE the users mapped value in DB
-                  mappedValue += userValue;
+                  await ethTickerModel.findOneAndUpdate(
+                    { subscriber: subscriberObj.subscriber },
+                    { lastCycle: mappedValue.lastCycle + userValue},
+                    { upsert: true },
+                  );
+                  // mappedValue.lastCycle += userValue;
                 }
               }
             }
@@ -179,6 +193,11 @@ export default class EthTickerChannel extends EPNSChannel {
 
           // UPDATE CYCLES VALUE
           // HERE
+          await ethTickerGlobalModel.findOneAndUpdate(
+            { id: 'global' },
+            { $inc: {lastCycle: 1}},
+            { upsert: true },
+          );
 
           const title = 'ETH at $' + formattedPrice;
           const message = `\nHourly Movement: ${hourChangeFixed}%\nDaily Movement: ${dayChangeFixed}%\nWeekly Movement: ${weekChangeFixed}%`;
