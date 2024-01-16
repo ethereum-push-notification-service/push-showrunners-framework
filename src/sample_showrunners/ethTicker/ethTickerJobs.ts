@@ -28,14 +28,21 @@ import EthTickerChannel from './ethTickerChannel';
 export default async () => {
   const startTime = new Date(new Date().setHours(0, 0, 0, 0));
 
-  const sixHourRule = new schedule.RecurrenceRule();
-  sixHourRule.hour = new schedule.Range(0, 23, 6);
-  sixHourRule.minute = 0;
-  sixHourRule.second = 0;
-  const channel = Container.get(EthTickerChannel);
-  channel.logInfo(`🛵 Scheduling Showrunner`);
+  // const sixHourRule = new schedule.RecurrenceRule();
+  // sixHourRule.hour = new schedule.Range(0, 23, 6);
+  // sixHourRule.minute = 0;
+  // sixHourRule.second = 0;
 
-  schedule.scheduleJob({ start: startTime, rule: sixHourRule }, async function() {
+  const oneHourRule = new schedule.RecurrenceRule();
+  oneHourRule.hour = new schedule.Range(0, 23, 6);
+  oneHourRule.minute = 0;
+  oneHourRule.second = 0;
+  
+  const channel = Container.get(EthTickerChannel);
+  channel.logInfo(`🛵 Scheduling Showrunner`); 
+
+  // schedule.scheduleJob({ start: startTime, rule: sixHourRule }, async function() {
+  schedule.scheduleJob({ start: startTime, rule: oneHourRule }, async function() {
     const taskName = 'ETH Ticker Fetch and sendMessageToContract()';
     try {
       await channel.sendMessageToContract(true);

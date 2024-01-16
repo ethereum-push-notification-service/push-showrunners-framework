@@ -1,3 +1,7 @@
 {
-  "cmcEndpoint": "https://pro-api.coinmarketcap.com/"
-}
+    "cmcEndpoint": "https://pro-api.coinmarketcap.com/",
+    "providerUrl":"https://ethereum-sepolia.publicnode.com",
+    "route":"v1/cryptocurrency/quotes/latest",
+    "cmcKey":""
+  }
+  
